@@ -5,12 +5,13 @@ import requests
 
 root = Tk()
 root.title("Converter")
-root.geometry("600x350")
+root.geometry("800x450")
 root.configure(bg='white')
 
 font = ("Arial", 14)
 
 favorite_currencies = []
+conversion_history = []
 
 
 def get_rate(f, t, a):
@@ -32,6 +33,8 @@ def get_rate(f, t, a):
 def calculate_diff(amoun, f, t):
     r = float(amoun) * get_rate(f, t, amoun)
     result.config(text=round(r, 3))
+    conversion = f + " to " + t + ": " + amount.get() + " = " + str(round(r,3))
+    add_to_history(conversion)
 
 
 def save_favorite():
@@ -49,6 +52,11 @@ def use_favorite():
 
 def delete_favorite():
     favorites_listbox.delete(favorites_listbox.curselection())
+
+
+def add_to_history(conversion):
+    conversion_history.append(conversion)
+    history_listbox.insert(END, conversion)
 
 
 from_label = ttk.Label(root, text="From Currency:", font=font, background='white')
@@ -91,6 +99,11 @@ delete_favorite_button.grid(row=1, column=2, padx=10, pady=10)
 favorites_listbox = Listbox(root, font=font, width=10, height=5)
 favorites_listbox.grid(row=2, column=2, columnspan=2, padx=10, pady=10,)
 
+history_label = ttk.Label(root, text="History:", font=font, background='white')
+history_label.grid(row=0, column=4,)
+
+history_listbox = Listbox(root, font=font, height=3)
+history_listbox.grid(row=1, column=4, columnspan=2,pady=10)
 
 with open('currency.json') as json_file:
     data = json.load(json_file)
