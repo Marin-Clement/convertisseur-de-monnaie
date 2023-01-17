@@ -1,31 +1,62 @@
 from tkinter import *
-import requests
+from tkinter import ttk
 import json
+import requests
 
-current_from = ""
-current_to = ""
 
 root = Tk()
-root.geometry("400x400")
+root.title("Converter")
+root.geometry("500x300")
+root.configure(bg='white')
 
-Label(root, text="From Currency:", font=("Roboto", 30)).place(x=10, y=20)
-from_currency = Menubutton(root, text=" ", width=7)
-from_currency.place(x=230, y=35)
-from_currency.menu = Menu(from_currency)
-from_currency["menu"] = from_currency.menu
-Label(root, text="To Currency:", font=("Roboto", 30)).place(x=10, y=100)
-to_currency = Menubutton(root, text=" ", width=7)
-to_currency.place(x=200, y=115)
-to_currency.menu = Menu(to_currency)
-to_currency["menu"] = to_currency.menu
-Label(root, text="Amount:", font=("Roboto", 30)).place(x=10, y=180)
-amount = Entry(root,width=5, bg='grey', font=("Roboto", 30))
-amount.place(x=130, y=181)
-Label(root, text="Result:", font=("Roboto", 30)).place(x=120, y=350)
-result = Label(root, text="", font=("Roboto", 30), fg='red2')
-result.place(x=215, y=351)
-convert_button = Button(root, text="CONVERT", font=("Roboto", 30), bg='grey', command=lambda: calulate_diff(amount.get(),current_from,current_to))
-convert_button.place(x=100, y=300)
+
+font = ("Arial", 14)
+
+
+from_label = ttk.Label(root, text="From Currency:", font=font, background='white')
+from_label.grid(row=0, column=0, padx=10, pady=10)
+
+
+from_currency = ttk.Combobox(root, font=font)
+from_currency.grid(row=0, column=1, padx=10, pady=10)
+
+
+to_label = ttk.Label(root, text="To Currency:", font=font, background='white')
+to_label.grid(row=1, column=0, padx=10, pady=10)
+
+
+to_currency = ttk.Combobox(root, font=font)
+to_currency.grid(row=1, column=1, padx=10, pady=10)
+
+
+amount_label = ttk.Label(root, text="Amount:", font=font, background='white')
+amount_label.grid(row=2,column=0, padx=10, pady=10)
+
+
+amount = ttk.Entry(root, font=font)
+amount.grid(row=2, column=1, padx=10, pady=10)
+
+
+convert_button = ttk.Button(root, text="CONVERT", command=lambda: calculate_diff(amount.get(), from_currency.get(), to_currency.get()))
+convert_button.grid(row=3, column=0, padx=10, pady=10)
+
+
+result_label = ttk.Label(root, text="Result:", font=font, background='white')
+result_label.grid(row=4, column=0, padx=10, pady=10)
+
+
+result = ttk.Label(root, text="", font=font, background='white', foreground='red')
+result.grid(row=4, column=1, padx=10, pady=10)
+
+
+with open('currency.json') as json_file:
+    data = json.load(json_file)
+    for key, value in data['symbols'].items():
+        from_currency['values'] = list(data['symbols'].keys())
+        to_currency['values'] = list(data['symbols'].keys())
+        from_currency.set(key)
+        to_currency.set(key)
+    json_file.close()
 
 
 def get_rate(f, t, a):
@@ -44,27 +75,9 @@ def get_rate(f, t, a):
     return float(rate)
 
 
-def calulate_diff(amoun, f, t):
+def calculate_diff(amoun, f, t):
     r = float(amoun) * get_rate(f, t, amoun)
-    result.config(text=round(r, 2))
-
-
-def change_button_name(button, k):
-    button.config(text=k)
-    if button == from_currency:
-        global current_from
-        current_from = k
-    else:
-        global current_to
-        current_to = k
-
-
-with open('currency.json') as json_file:
-    data = json.load(json_file)
-    for key, value in data['symbols'].items():
-        from_currency.menu.add_command(label=key, command=lambda label=key, button=from_currency: change_button_name(button, label))
-        to_currency.menu.add_command(label=key, command=lambda label=key, button=to_currency:  change_button_name(button, label))
-    json_file.close()
+    result.config(text=round(r, 3))
 
 
 root.mainloop()
