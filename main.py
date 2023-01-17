@@ -4,8 +4,9 @@ import json
 import requests
 
 root = Tk()
-root.title("Converter")
-root.geometry("800x450")
+root.resizable(False, False)
+root.title("Currency Converter")
+root.geometry("600x850")
 root.configure(bg='white')
 
 font = ("Arial", 14)
@@ -65,6 +66,7 @@ from_label.grid(row=0, column=0, padx=10, pady=10)
 from_currency = ttk.Combobox(root, font=font)
 from_currency.grid(row=0, column=1, padx=10, pady=10)
 
+
 to_label = ttk.Label(root, text="To Currency:", font=font, background='white')
 to_label.grid(row=1, column=0, padx=10, pady=10)
 
@@ -80,30 +82,33 @@ amount.grid(row=2, column=1, padx=10, pady=10)
 convert_button = ttk.Button(root, text="CONVERT", command=lambda: calculate_diff(amount.get(), from_currency.get(), to_currency.get()))
 convert_button.grid(row=3, column=0, padx=10, pady=10)
 
+
 result_label = ttk.Label(root, text="Result:", font=font, background='white')
 result_label.grid(row=4, column=0, padx=10, pady=10)
 
 result = ttk.Label(root, text="", font=font, background='white', foreground='red')
 result.grid(row=4, column=1, padx=10, pady=10)
 
+favorites_frame = ttk.LabelFrame(root, text="Favorite Currencies")
+favorites_frame.grid(row=5, column=0, padx=10, pady=10, columnspan=2, sticky='nsew')
 
-save_favorite_button = ttk.Button(root, text="SAVE AS FAVORITE", command=save_favorite)
-save_favorite_button.grid(row=0, column=2, padx=10, pady=10)
+favorites_listbox = Listbox(favorites_frame, font=font)
+favorites_listbox.grid(row=0, column=0, padx=10, pady=10)
 
-use_favorite_button = ttk.Button(root, text="USE FAVORITE", command=use_favorite)
-use_favorite_button.grid(row=3, column=2, padx=10, pady=10)
+favorites_add_button = ttk.Button(favorites_frame, text="Add", command=save_favorite)
+favorites_add_button.grid(row=0, column=1, padx=10, pady=10)
 
-delete_favorite_button = ttk.Button(root, text="DELETE FAVORITE", command=delete_favorite)
-delete_favorite_button.grid(row=1, column=2, padx=10, pady=10)
+favorites_use_button = ttk.Button(favorites_frame, text="Use", command=use_favorite)
+favorites_use_button.grid(row=0, column=2, padx=10, pady=10)
 
-favorites_listbox = Listbox(root, font=font, width=10, height=5)
-favorites_listbox.grid(row=2, column=2, columnspan=2, padx=10, pady=10,)
+favorites_delete_button = ttk.Button(favorites_frame, text="Delete", command=delete_favorite)
+favorites_delete_button.grid(row=0, column=3, padx=10, pady=10)
 
-history_label = ttk.Label(root, text="History:", font=font, background='white')
-history_label.grid(row=0, column=4,)
+history_frame = ttk.LabelFrame(root, text="Conversion History")
+history_frame.grid(row=6, column=0, padx=10, pady=10, columnspan=2, sticky='nsew')
 
-history_listbox = Listbox(root, font=font, height=3)
-history_listbox.grid(row=1, column=4, columnspan=2,pady=10)
+history_listbox = Listbox(history_frame, font=font, width=50)
+history_listbox.grid(row=0, column=0, padx=10, pady=10)
 
 with open('currency.json') as json_file:
     data = json.load(json_file)
@@ -115,6 +120,7 @@ with open('currency.json') as json_file:
     json_file.close()
 
 root.mainloop()
+
 
 """
 Ce script utilise une API pour aller chercher le rate de toutes les monnaies. Cela me permet d'avoir une quantité exhaustive
