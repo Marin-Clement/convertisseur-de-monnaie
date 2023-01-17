@@ -102,3 +102,11 @@ with open('currency.json') as json_file:
     json_file.close()
 
 root.mainloop()
+
+"""
+Ce script utilise une API pour aller chercher le rate de toutes les monnaies. Cela me permet d'avoir une quantité exhaustive
+De currency. Malgré tout cela pose un problème pour le job bonus, car je n'utilise pas localement de moyen pour stocker
+les rates. Sans utiliser d'API il suffirait de prendre une monnaie référence comme USD par exemple et de tout convertir
+selon son taux de change. On pourrait donc implementer dans un fichier json tout le rate des monnaies selon l'USD.
+Ici l'ajout d'une monnaie fictive serait donc bien plus simple, mais j'ai préféré avoir un plus grande quantité de choix.
+"""
