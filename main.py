@@ -6,11 +6,47 @@ import requests
 
 root = Tk()
 root.title("Converter")
-root.geometry("500x300")
+root.geometry("550x300")
 root.configure(bg='white')
 
 
 font = ("Arial", 14)
+
+favorite_currencies = []
+
+
+def get_rate(f, t, a):
+    url = "https://api.apilayer.com/fixer/convert?to=" + str(t) + "&from=" + str(f) + "&amount=" + str(a)
+
+    payload = {}
+    headers = {
+      "apikey": "dODkjRPLrzJ079J5TtXIWypbygLxauwG"
+    }
+
+    response = requests.request("GET", url, headers=headers, data=payload)
+
+    result_json = json.loads(response.text)
+    rate = result_json['info']['rate']
+
+    return float(rate)
+
+
+def calculate_diff(amoun, f, t):
+    r = float(amoun) * get_rate(f, t, amoun)
+    result.config(text=round(r, 3))
+
+
+def save_favorite():
+    favorite_currencies.append((from_currency.get(), to_currency.get()))
+    print("Favorite currency saved: " + from_currency.get() + " to " + to_currency.get())
+
+
+def use_favorite():
+    if not favorite_currencies:
+        print("No favorite currencies saved.")
+        return
+    from_currency.set(favorite_currencies[-1][0])
+    to_currency.set(favorite_currencies[-1][1])
 
 
 from_label = ttk.Label(root, text="From Currency:", font=font, background='white')
@@ -49,6 +85,14 @@ result = ttk.Label(root, text="", font=font, background='white', foreground='red
 result.grid(row=4, column=1, padx=10, pady=10)
 
 
+save_favorite_button = ttk.Button(root, text="SAVE AS FAVORITE", command=save_favorite)
+save_favorite_button.grid(row=0, column=2, padx=10, pady=10)
+
+
+use_favorite_button = ttk.Button(root, text="USE FAVORITE", command=use_favorite)
+use_favorite_button.grid(row=1, column=2, padx=10, pady=10)
+
+
 with open('currency.json') as json_file:
     data = json.load(json_file)
     for key, value in data['symbols'].items():
@@ -58,26 +102,6 @@ with open('currency.json') as json_file:
         to_currency.set(key)
     json_file.close()
 
-
-def get_rate(f, t, a):
-    url = "https://api.apilayer.com/fixer/convert?to=" + str(t) + "&from=" + str(f) + "&amount=" + str(a)
-
-    payload = {}
-    headers = {
-      "apikey": "dODkjRPLrzJ079J5TtXIWypbygLxauwG"
-    }
-
-    response = requests.request("GET", url, headers=headers, data=payload)
-
-    result_json = json.loads(response.text)
-    rate = result_json['info']['rate']
-
-    return float(rate)
-
-
-def calculate_diff(amoun, f, t):
-    r = float(amoun) * get_rate(f, t, amoun)
-    result.config(text=round(r, 3))
 
 
 root.mainloop()
